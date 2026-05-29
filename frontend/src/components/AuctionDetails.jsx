@@ -23,7 +23,7 @@ export default function AuctionDetails() {
 
   return (
     <div className="card">
-      <h3>🏆 Current Auction</h3>
+      <h3>Current Auction</h3>
       <p><strong>Highest Bid:</strong> {auction.highest_bid} tokens</p>
       <p><strong>Highest Bidder:</strong> {auction.highest_bidder?.toString().slice(0, 8)}...</p>
       <p><strong>Deadline:</strong> {new Date(auction.deadline * 1000).toLocaleString()}</p>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { invokeContract, queryContract } from '../services/contract';
 import { connectFreighter } from '../services/freighter';
+import { Address } from '@stellar/stellar-sdk';
 
 export default function ClaimRefund() {
   const [refundAmount, setRefundAmount] = useState(0);
@@ -43,7 +44,7 @@ export default function ClaimRefund() {
 
   return (
     <div className="card">
-      <h3>🔄 Claim Refund</h3>
+      <h3>Claim Refund</h3>
       <p>You have {refundAmount} tokens to claim.</p>
       <button onClick={handleClaim} disabled={loading}>{loading ? 'Claiming...' : 'Claim Refund'}</button>
     </div>

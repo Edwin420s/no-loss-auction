@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { invokeContract } from '../services/contract';
 import { connectFreighter } from '../services/freighter';
+import { Address } from '@stellar/stellar-sdk';
 
 export default function PlaceBid({ onSuccess }) {
   const [amount, setAmount] = useState('');
@@ -27,7 +28,7 @@ export default function PlaceBid({ onSuccess }) {
 
   return (
     <div className="card">
-      <h3>💰 Place Bid</h3>
+      <h3>Place Bid</h3>
       <input type="number" placeholder="Amount (tokens)" value={amount} onChange={(e) => setAmount(e.target.value)} />
       <button onClick={handleBid} disabled={loading}>{loading ? 'Placing...' : 'Bid'}</button>
     </div>

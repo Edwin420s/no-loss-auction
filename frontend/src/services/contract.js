@@ -1,7 +1,7 @@
-import { Contract, Address, nativeToScVal, scValToNative } from '@stellar/stellar-sdk';
+import { Contract, Address, nativeToScVal, scValToNative, TransactionBuilder, Account } from '@stellar/stellar-sdk';
 import { server, networkPassphrase, getAccount, signAndSend } from './freighter';
 
-// 👇 REPLACE WITH YOUR DEPLOYED CONTRACT ID AFTER DEPLOYMENT
+// REPLACE WITH YOUR DEPLOYED CONTRACT ID AFTER DEPLOYMENT
 export const CONTRACT_ID = 'CDJ3K...';
 
 export async function invokeContract({ method, args, sourcePublicKey }) {

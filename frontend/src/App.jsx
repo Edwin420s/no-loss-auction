@@ -19,7 +19,7 @@ function App() {
 
   return (
     <div className="container">
-      <h1>⚡ No‑Loss Auction on Soroban</h1>
+      <h1>No-Loss Auction on Soroban</h1>
       {!wallet ? (
         <button onClick={connectWallet}>Connect Freighter Wallet</button>
       ) : (

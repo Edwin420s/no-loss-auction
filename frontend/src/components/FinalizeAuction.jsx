@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { invokeContract } from '../services/contract';
 import { connectFreighter } from '../services/freighter';
+import { Address } from '@stellar/stellar-sdk';
 
 export default function FinalizeAuction({ onSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,7 @@ export default function FinalizeAuction({ onSuccess }) {
 
   return (
     <div className="card">
-      <h3>✅ Finalize Auction</h3>
+      <h3>Finalize Auction</h3>
       <button onClick={handleFinalize} disabled={loading}>{loading ? 'Finalizing...' : 'Finalize'}</button>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { invokeContract } from '../services/contract';
 import { connectFreighter } from '../services/freighter';
+import { Address } from '@stellar/stellar-sdk';
 
 export default function CancelAuction({ onSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,7 @@ export default function CancelAuction({ onSuccess }) {
 
   return (
     <div className="card">
-      <h3>❌ Cancel Auction (only if no bids)</h3>
+      <h3>Cancel Auction (only if no bids)</h3>
       <button onClick={handleCancel} disabled={loading}>{loading ? 'Cancelling...' : 'Cancel'}</button>
     </div>
   );

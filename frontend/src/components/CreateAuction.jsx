@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { invokeContract } from '../services/contract';
 import { connectFreighter } from '../services/freighter';
+import { Address } from '@stellar/stellar-sdk';
 
 export default function CreateAuction({ onSuccess }) {
   const [token, setToken] = useState('');
@@ -33,7 +34,7 @@ export default function CreateAuction({ onSuccess }) {
 
   return (
     <div className="card">
-      <h3>➕ Create Auction</h3>
+      <h3>Create Auction</h3>
       <input type="text" placeholder="Token Address (SEP‑41)" value={token} onChange={(e) => setToken(e.target.value)} />
       <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
       <button onClick={handleCreate} disabled={loading}>{loading ? 'Creating...' : 'Create'}</button>
