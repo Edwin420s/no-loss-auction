@@ -7,5 +7,5 @@ pub struct Auction {
     pub highest_bid: i128,
     pub deadline: u64,
     pub active: bool,
-    pub token: Address, // SEP-41 token contract address
+    pub token: Address,
 }

@@ -1,26 +1,27 @@
-import { Server, Contract, Address, nativeToScVal } from '@stellar/stellar-sdk';
-import * as SorobanClient from '@stellar/stellar-sdk/soroban';
+import { Contract, Address, nativeToScVal, scValToNative } from '@stellar/stellar-sdk';
+import { server, networkPassphrase, getAccount, signAndSend } from './freighter';
 
-// Replace with your deployed contract ID (after deployment)
-export const CONTRACT_ID = 'CDJ3K...'; 
+// 👇 REPLACE WITH YOUR DEPLOYED CONTRACT ID AFTER DEPLOYMENT
+export const CONTRACT_ID = 'CDJ3K...';
 
-// Testnet setup
-export const server = new Server('https://soroban-testnet.stellar.org');
-export const networkPassphrase = 'Test SDF Network ; September 2025';
-
-export function loadContract(contractId) {
-  return new Contract(contractId);
+export async function invokeContract({ method, args, sourcePublicKey }) {
+  const contract = new Contract(CONTRACT_ID);
+  const account = await getAccount(sourcePublicKey);
+  const builtTx = new TransactionBuilder(account, { fee: '10000', networkPassphrase })
+    .addOperation(contract.call(method, ...args))
+    .setTimeout(30)
+    .build();
+  const txXdr = builtTx.toXDR();
+  const result = await signAndSend(txXdr);
+  return result;
 }
 
-// Helper to invoke a contract method
-export async function invokeContract({ contractId, method, args, sourceAccount, signTransaction }) {
-  const contract = loadContract(contractId);
-  const txBuilder = new SorobanClient.TransactionBuilder(sourceAccount, { networkPassphrase, fee: '10000' })
+export async function queryContract({ method, args }) {
+  const contract = new Contract(CONTRACT_ID);
+  const tx = new TransactionBuilder(new Account('G...', '0'), { fee: '10000', networkPassphrase })
     .addOperation(contract.call(method, ...args))
-    .setTimeout(30);
-  let tx = txBuilder.build();
-  tx = await signTransaction(tx);
-  const result = await server.sendTransaction(tx);
-  await server.waitForTransaction(result.hash);
-  return result;
+    .setTimeout(0)
+    .build();
+  const result = await server.simulateTransaction(tx);
+  return scValToNative(result.result.retval);
 }

@@ -14,7 +14,7 @@ pub struct NoLossAuction;
 
 #[contractimpl]
 impl NoLossAuction {
-    /// Create a new auction. `deadline` is a Unix timestamp.
+    /// Create auction. Fails if one already exists.
     pub fn create_auction(env: Env, seller: Address, token: Address, deadline: u64) {
         seller.require_auth();
         if get_auction(&env).is_some() {
@@ -33,8 +33,7 @@ impl NoLossAuction {
         bump_instance(&env);
     }
 
-    /// Place a bid. Must be higher than current highest bid.
-    /// Previous highest bidder's amount is stored as a refund.
+    /// Place a bid. Must be > current highest. Previous highest gets a refund entry.
     pub fn place_bid(env: Env, bidder: Address, amount: i128) {
         bidder.require_auth();
 
@@ -49,17 +48,17 @@ impl NoLossAuction {
             panic!("bid too low");
         }
 
-        // Transfer tokens from bidder to this contract
+        // Transfer new bid from bidder to contract
         let token_client = token::Client::new(&env, &auction.token);
         token_client.transfer(&bidder, &env.current_contract_address(), &amount);
 
         // Store refund for previous highest bidder (if any)
         if auction.highest_bid > 0 {
             let mut refunds = get_refunds(&env);
-            let prev = auction.highest_bidder.clone();
+            let prev_bidder = auction.highest_bidder.clone();
             let prev_amount = auction.highest_bid;
-            let new_refund = refunds.get(prev.clone()).unwrap_or(0) + prev_amount;
-            refunds.set(prev, new_refund);
+            let new_refund = refunds.get(prev_bidder.clone()).unwrap_or(0) + prev_amount;
+            refunds.set(prev_bidder, new_refund);
             set_refunds(&env, &refunds);
         }
 
@@ -94,14 +93,13 @@ impl NoLossAuction {
         caller.require_auth();
 
         let mut auction = get_auction(&env).expect("auction not found");
-        if auction.active == false {
+        if !auction.active {
             panic!("auction already finalized or cancelled");
         }
         if env.ledger().timestamp() <= auction.deadline {
             panic!("deadline not yet reached");
         }
 
-        // Transfer the highest bid to seller
         let token_client = token::Client::new(&env, &auction.token);
         token_client.transfer(
             &env.current_contract_address(),
@@ -114,7 +112,7 @@ impl NoLossAuction {
         bump_instance(&env);
     }
 
-    /// Cancel auction – only if no bids have been placed (highest_bid == 0).
+    /// Cancel auction – only if no bids placed.
     pub fn cancel_auction(env: Env, caller: Address) {
         caller.require_auth();
 
@@ -130,8 +128,7 @@ impl NoLossAuction {
         bump_instance(&env);
     }
 
-    // View functions (read-only)
-
+    // ---- View functions ----
     pub fn get_auction(env: Env) -> Option<Auction> {
         get_auction(&env)
     }
